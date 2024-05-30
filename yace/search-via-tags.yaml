@@ -1,0 +1,52 @@
+
+apiVersion: v1alpha1
+discovery:
+  jobs:
+    - type: AWS/S3
+      regions:
+        - us-east-1
+        - ap-southeast-2
+        - ap-south-1
+      roles:
+        - roleArn: "arn:aws:iam::470725884099:role/yace-assume-role"
+        - roleArn: "arn:aws:iam::787367675716:role/tlst-yace-role"
+      searchTags: 
+        - key: Test
+          value: YACE
+      period: 86400
+      length: 604800
+      metrics:
+        - name: NumberOfObjects
+          statistics: 
+            - Sum
+        - name: BucketSizeBytes
+          statistics: 
+            - Average
+    - type: AWS/EC2
+      regions:
+        - ap-south-1
+      roles:
+        - roleArn: "arn:aws:iam::470725884099:role/yace-assume-role"
+        - roleArn: "arn:aws:iam::787367675716:role/tlst-yace-role"
+      searchTags: 
+        - key: Test
+          value: YACE
+      period: 300
+      length: 3600
+      metrics:
+        - name: CPUUtilization
+          statistics: [Average]
+        - name: NetworkIn
+          statistics: [Average, Sum]
+        - name: NetworkOut
+          statistics: [Average, Sum]
+        - name: NetworkPacketsIn
+          statistics: [Sum]
+        - name: NetworkPacketsOut
+          statistics: [Sum]
+        - name: StatusCheckFailed
+          statistics: [Sum]
+        - name: StatusCheckFailed_Instance
+          statistics: [Sum]
+        - name: StatusCheckFailed_System
+          statistics: [Sum]

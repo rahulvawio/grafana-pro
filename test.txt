@@ -1,0 +1,257 @@
+apiVersion
+ 
+apiVersion: v1alpha1
+Purpose: Specifies the version of the configuration file.
+When to Use: Always required; must be set to "v1alpha1".
+sts-region
+ 
+sts-region: <string>
+Purpose: Defines the AWS STS regional endpoint to use.
+When to Use: Optional. Use if you need to specify a particular STS endpoint.
+Job Configuration Blocks
+discovery
+ 
+discovery: <discovery_jobs_list_config>
+Purpose: Configures auto-discovery jobs, which automatically discover AWS resources based on tags.
+When to Use: Optional, but at least one of discovery, static, or customNamespace must be defined.
+static
+ 
+static:
+  [ - <static_job_config> ... ]
+Purpose: Configures static jobs, which define specific metrics to pull from CloudWatch without discovery.
+When to Use: Optional, but at least one of discovery, static, or customNamespace must be defined.
+
+customNamespace
+ 
+customNamespace:
+  [ - <custom_namespace_job_config> ... ]
+Purpose: Configures jobs for custom namespaces in CloudWatch.
+When to Use: Optional, but at least one of discovery, static, or customNamespace must be defined.
+
+
+Detailed Configuration Blocks
+discovery_jobs_list_config
+Configures jobs of type "auto-discovery".
+ 
+discovery:
+  exportedTagsOnMetrics:
+    kafka:
+      - Name
+  jobs:
+    - <discovery_job_config>
+
+exportedTagsOnMetrics: Defines tags to be exported for metrics.
+Purpose: Include tags as part of the exported metrics.
+When to Use: Optional. Use if you need to include specific tags in your metrics.
+
+jobs: List of auto-discovery jobs.
+Purpose: Specify multiple jobs for auto-discovery.
+When to Use: Required. Define one or more jobs within this list.
+
+discovery_job_config
+Specifies the details of a job of type "auto-discovery".
+ 
+jobs:
+  - regions:
+      - <string>
+    type: <string>
+    roles:
+      - <role_config>
+    searchTags:
+      - <search_tags_config>
+    customTags:
+      - <custom_tags_config>
+    dimensionNameRequirements:
+      - <string>
+    roundingPeriod: <int>
+    recentlyActiveOnly: <boolean>
+    includeContextOnInfoMetrics: <boolean>
+    statistics:
+      - <string>
+    period: <int>
+    length: <int>
+    delay: <int>
+    nilToZero: <boolean>
+    addCloudwatchTimestamp: <boolean>
+    metrics:
+      - <metric_config>
+
+regions: List of AWS regions.
+Purpose: Specifies the regions to discover resources in.
+When to Use: Required.
+
+
+type: CloudWatch service alias or namespace name.
+Purpose: Specifies the service or namespace to discover metrics for.
+When to Use: Required.
+
+
+roles: List of IAM roles to assume.
+Purpose: Specifies IAM roles for cross-account access.
+When to Use: Optional. Use if cross-account access is needed.
+
+
+searchTags: List of key/value pairs for tag filtering.
+Purpose: Filters resources based on tags.
+When to Use: Required. Define tags to match for resource discovery.
+
+customTags: Custom tags to add as key/value pairs.
+Purpose: Adds custom tags to discovered resources.
+When to Use: Optional. Use to add additional context.
+
+dimensionNameRequirements: List of metric dimensions to query.
+Purpose: Filters metrics based on dimensions.
+When to Use: Optional. Use to specify dimension requirements.
+
+roundingPeriod: Time rounding period for CloudWatch requests.
+Purpose: Optimizes CloudWatch request performance.
+When to Use: Optional. Use to round time for better performance.
+
+recentlyActiveOnly: Filters metrics to those active in the last 3 hours.
+Purpose: Reduces the number of returned metrics.
+When to Use: Optional. Use to limit metrics to recent activity.
+
+includeContextOnInfoMetrics: Includes contextual information on metrics.
+Purpose: Adds context to metrics for better understanding.
+When to Use: Optional. Use to include context information.
+
+statistics: List of statistic types.
+Purpose: Defines which statistics to retrieve (e.g., Average, Maximum).
+When to Use: Required. Specify desired statistics.
+
+period: Statistic period in seconds.
+Purpose: Defines the period for metric statistics.
+When to Use: Optional. Use to set a custom period.
+
+length: How far back to request data in seconds.
+Purpose: Defines the look-back period for metrics.
+When to Use: Optional. Use to set a custom look-back period.
+
+delay: Delay time in seconds before requesting metrics.
+Purpose: Adjusts the time window for metrics.
+When to Use: Optional. Use to delay metric requests.
+
+nilToZero: Returns 0 if no metrics are found.
+Purpose: Handles missing metrics by returning zero.
+When to Use: Optional. Use to avoid NaN values.
+
+addCloudwatchTimestamp: Exports metrics with original CloudWatch timestamps.
+Purpose: Keeps original timestamps for metrics.
+When to Use: Optional. Use for accurate timestamping.
+
+metrics: List of metric definitions.
+Purpose: Specifies individual metrics to retrieve.
+When to Use: Required. Define one or more metrics to monitor.
+
+static_job_config
+Configures jobs of type "static".
+ 
+static:
+  - name: <string>
+    namespace: <string>
+    regions:
+      - <string>
+    roles:
+      - <role_config>
+    customTags:
+      - <custom_tags_config>
+    dimensions:
+      - <dimensions_config>
+    metrics:
+      - <metric_config>
+
+name: Name of the job.
+Purpose: Identifies the job.
+When to Use: Required.
+
+namespace: CloudWatch namespace.
+Purpose: Specifies the CloudWatch namespace.
+When to Use: Required.
+
+regions: List of AWS regions.
+Purpose: Specifies the regions to query.
+When to Use: Required.
+
+roles: List of IAM roles to assume.
+Purpose: Specifies IAM roles for cross-account access.
+When to Use: Optional.
+
+customTags: Custom tags to add as key/value pairs.
+Purpose: Adds custom tags.
+When to Use: Optional.
+
+dimensions: CloudWatch metric dimensions as name/value pairs.
+Purpose: Specifies metric dimensions.
+When to Use: Required.
+
+metrics: List of metric definitions.
+Purpose: Specifies metrics to retrieve.
+When to Use: Required.
+
+custom_namespace_job_config
+Configures jobs for custom namespaces.
+
+customNamespace:
+  - name: <string>
+    namespace: <string>
+    regions:
+      - <string>
+    roles:
+      - <role_config>
+    customTags:
+      - <custom_tags_config>
+    dimensionNameRequirements:
+      - <string>
+    roundingPeriod: <int>
+    recentlyActiveOnly: <boolean>
+    statistics:
+      - <string>
+    period: <int>
+    length: <int>
+    delay: <int>
+    nilToZero: <boolean>
+    addCloudwatchTimestamp: <boolean>
+    metrics:
+      - <metric_config>
+
+name: Name of the job.
+Purpose: Identifies the job.
+When to Use: Required.
+
+namespace: CloudWatch namespace.
+Purpose: Specifies the custom CloudWatch namespace.
+When to Use: Required.
+
+regions: List of AWS regions.
+Purpose: Specifies the regions to query.
+When to Use: Required.
+
+roles: List of IAM roles to assume.
+Purpose: Specifies IAM roles for cross-account access.
+When to Use: Optional.
+
+customTags: Custom tags to add as key/value pairs.
+Purpose: Adds custom tags.
+When to Use: Optional.
+
+dimensionNameRequirements: List of metric dimensions to query.
+Purpose: Filters metrics based on dimensions.
+When to Use: Optional.
+
+roundingPeriod: Time rounding period for CloudWatch requests.
+Purpose: Optimizes CloudWatch request performance.
+
+
+
+
+
+
+
+
+node_memory_MemTotal_bytes - node_memory_MemFree_bytes - (node_memory_Cached_bytes + node_memory_Buffers_bytes + node_memory_SReclaimable_bytes)
+
+
+
+- job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
